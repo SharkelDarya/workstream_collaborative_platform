@@ -1,0 +1,16 @@
+.form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+form {
+    display: flex;
+    flex-direction: column; 
+    gap: 10px;
+    width: 200px;
+}
+form a {
+    text-decoration: none;
+}

@@ -18,10 +18,12 @@
   - [x] Создать **модели** (User, Workspace, Member, Channel, Message, Job).
   - [x] Описать связи между ними.
   - [ ] (Позже) — синхронизировать их с базой и начать использовать в API.
-- [ ] Регистрация/вход (hash пароля bcrypt), JWT access+refresh, refresh rotation (хранить refresh в DB).
+- [ ] Функционал со стороны пользователя.
   - [x] env окружение
   - [x] Регистрация новых пользователей
   - [x] Авторизация пользователя
+  - [x] Добвление новых Workspace
+  - [x] Добавление участников в Workspace
 - [ ] CRUD для workspace и channels.
 - [ ] Минимальный фронтенд: страницы логина/регистрации + dashboard (список workspaces) — Formik + MUI, RTK Query набросать базовые hooks.
 

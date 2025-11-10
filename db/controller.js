@@ -5,35 +5,38 @@ const WorkspaceMember = require('./models/WorkSpaceMember')
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
-const generateAccessToken = (id, name) => {
-    const payload = { id, name};
+const generateAccessToken = (id, name, email) => {
+    const payload = { id, name, email};
     return jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, {expiresIn: process.env.ACCESS_TOKEN_EXPIRES})
 }
 
 class Controller {
     async registration(req, res) {
         try {
-            const {email, username, password} = req.body;
-            const candidate = User.findOne({ name: username }, {email});
-            if(!candidate){
-                return res.status(400).json({ messange: "User not exists!" })
+            const { email, username, password } = req.body;
+
+            const candidate = await User.findOne({ where: { name: username}});
+            if(candidate){
+                return res.status(400).json({ message: "User already exists!" });
             }
+
             const passwordHash = await bcrypt.hash(password, 10);
-            const user = new User({email, name: username, passwordHash});
+            const user = new User({ email, name: username, passwordHash });
             await user.save();
-            return res.json({ messange: "Done!", user: { id: user.id, email: user.email, name: user.name } })
+
+            res.redirect('/index.html');
         } catch (error) {
-            console.log(error)
-            res.status(400).json({messange: "Registration error!"})
+            console.log(error);
+            res.status(400).json({ message: "Registration error!" });
         }
     }
 
     async login(req, res) {
         try {
             const { username, password } = req.body
-            const user = await User.findOne({ name: username})
+            const user = await User.findOne({ where: { name: username}})
             if(!user){
-                return res.status(400).json({ messange: "User exists!" })
+                return res.status(400).json({ message: "User does not exist!" })
             }
 
             const validPassword = bcrypt.compareSync(password, user.passwordHash)
@@ -41,8 +44,13 @@ class Controller {
                 return res.status(400).json({ messange: "invalid password!" })
             }
 
-            const token = generateAccessToken(user.id, user.name)
-            return res.json({ messange: "Done!", user: { id: user.id, email: user.email, name: user.name }, token })
+            const token = generateAccessToken(user.id, user.name, user.email)
+
+            return res.json({
+                message: "Login successful",
+                user: { id: user.id, name: user.name, email: user.email },
+                token
+            });
         } catch (error) {
             console.log(error)
             res.status(400).json({messange: "Login error!"})
@@ -130,10 +138,13 @@ class Controller {
         }
     }
 
-    async getUsers(req, res) {
+    async getUser(req, res) {
         try {
-            const users = await User.findAll()
-            res.json(users)
+            res.json({
+                id: req.user.id,
+                name: req.user.name,
+                email: req.user.email
+            });
         } catch (error) {
             console.log(error)
         }

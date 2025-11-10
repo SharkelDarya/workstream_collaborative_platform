@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./css/style.css">
+    <title>Workstream collaborative platform - Login</title>
+</head>
+<body>
+    <div class="form" onsubmit="loginUser(event)">
+        <h3>Welcome to Workstream Platform!</h3>
+        <form>
+            <label>Username</label>
+            <input type="text" name="username" required>
+            <label>Password</label>
+            <input type="password" name="password" required>
+            <input type="submit" value="Login">
+            <a href="registration.html">Registraton</a>
+        </form>
+    </div>
+<script>
+    async function loginUser(event) {
+        event.preventDefault();
+
+        const username = document.querySelector('input[name="username"]').value;
+        const password = document.querySelector('input[name="password"]').value;
+
+        const res = await fetch('/api/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password })
+        });
+
+        if (res.ok) {
+            const data = await res.json();
+            localStorage.setItem('token', data.token);
+
+            window.location.href = '/user.html';
+        } else {
+            const error = await res.json();
+            alert(error.message);
+        }
+    }
+</script>
+</body>
+</html>

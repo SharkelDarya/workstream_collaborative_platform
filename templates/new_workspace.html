@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./css/style.css">
+    <title>Create new Workspaces</title>
+</head>
+<body>
+    <div class="form">
+        <h3>Creation of new Workspace!</h3>
+        <form onsubmit="NewWorkspace(event)">
+            <label>Name</label>
+            <input type="text" name="name_workspace">
+            <input type="submit" value="Create!">
+            <a href="user.html">Cancel</a>
+        </form>
+    </div>
+    <script>
+        async function NewWorkspace(event){
+            event.preventDefault();
+            const name_workspace = document.querySelector('input[name="name_workspace"]').value;
+            const token = localStorage.getItem('token');
+
+            const res = await fetch('/api/create_workspace', {
+                method: "POST",
+                headers: { 
+                    'Content-Type': 'application/json', 
+                    'Authorization': `Bearer ${token}` 
+                },
+                body: JSON.stringify({ name_workspace })
+            });
+
+
+            if (res.ok) {
+                const data = await res.json();
+                window.location.href = '/user.html';
+            } else {
+                const error = await res.json();
+                alert(error.message);
+            }
+        }
+    </script>
+</body>
