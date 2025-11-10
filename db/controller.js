@@ -49,18 +49,67 @@ class Controller {
         }
     }
 
+    async addMembers(req, res) {
+        try {
+            const { id } = req.user
+            const { id_workspace, ids_members, roles } = req.body
+            
+            const workspace = await Workspace.findOne({ where: { id: id_workspace }})
+            if (!workspace) {
+                return res.status(404).json({ message: "Workspace not found!" });
+            }
+
+            const roleMap = {
+                0: 'member',
+                1: 'admin'
+            };
+
+            const addedMembers = [];
+            for(let i = 0; i < ids_members.length; i++){
+                const userId = ids_members[i];
+                const roleNumber = roles[i];
+
+                let role = 'member'
+                if(roleNumber == 1) role = 'admin';
+
+                const member = await WorkspaceMember.create({
+                    workspaceId: id_workspace,
+                    userId,
+                    role
+                })
+
+                addedMembers.push(member);
+            }
+
+            res.json({ message: "Members added!", members: addedMembers })
+
+        } catch (error) {
+            console.log(error)
+            res.status(400).json({messange: "Cannt add members to Workspace!"})
+        }
+    }
+
     async createWorkspace(req, res) {
         try {
             const { id } = req.user
             const { name_workspace }  = req.body
-            const workspace = new Workspace({
+            
+            const workspace = await Workspace.create({
                 name: name_workspace,
                 ownerId: id
-            })
+            });
 
-            await workspace.save();
+            const workspaceMember = await WorkspaceMember.create({
+                workspaceId: workspace.id,
+                userId: id,
+                role: 'owner'
+            });
 
-            res.json({messange: "Workspace created! ", workspace})
+            res.json({
+                message: "Workspace created!",
+                workspace,
+                workspaceMember
+            });
         } catch (error) {
             console.log(error)
             res.status(400).json({messange: "Cannt create new Workspace!"})
