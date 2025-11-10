@@ -39,7 +39,6 @@
 - [ ] Email уведомления (Nodemailer + SMTP/SES): письмо при завершении job и приглашения в workspace.
 - [ ] Минимальный frontend: страницы для логина/регистрации, dashboard (список workspaces), workspace view (список каналов, чат), панель запуска jobs + статус. Использовать Next.js App Router, TypeScript, MUI + Formik формы, Redux Toolkit + RTK Query для API, socket.io-client для realtime, i18n (next-i18next или next-intl) — импорт переводов из Google Sheets можно предусмотреть как JSON импортный скрипт (минимально реализовать).
 
-
 ## Миграции
 
 - [x] Migration file: `sequelize migration:generate --name create-tables`
