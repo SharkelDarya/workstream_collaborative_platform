@@ -1,0 +1,30 @@
+{
+  "name": "workstream_collaborative_platform",
+  "version": "1.0.0",
+  "description": "<https://www.youtube.com/watch?v=d_aJdcDq6AY> - Простая авторизация на NODE JS. Роли пользователя. Express и MongoDB. JWT Access Token, bcrypt",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SharkelDarya/workstream_collaborative_platform.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/SharkelDarya/workstream_collaborative_platform/issues"
+  },
+  "homepage": "https://github.com/SharkelDarya/workstream_collaborative_platform#readme",
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "nodemon": "^3.1.10",
+    "pg": "^8.16.3",
+    "sequelize": "^6.37.7"
+  }
+}
