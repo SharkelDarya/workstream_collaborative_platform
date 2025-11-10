@@ -1,10 +1,12 @@
 const bcrypt = require('bcrypt');
 const User = require('./models/User')
+const Workspace = require('./models/Workspace')
+const WorkspaceMember = require('./models/WorkSpaceMember')
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
-const generateAccessToken = (id) => {
-    const payload = { id };
+const generateAccessToken = (id, name) => {
+    const payload = { id, name};
     return jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, {expiresIn: process.env.ACCESS_TOKEN_EXPIRES})
 }
 
@@ -39,11 +41,43 @@ class Controller {
                 return res.status(400).json({ messange: "invalid password!" })
             }
 
-            const token = generateAccessToken(user._id)
-            return res.json({token})
+            const token = generateAccessToken(user.id, user.name)
+            return res.json({ messange: "Done!", user: { id: user.id, email: user.email, name: user.name }, token })
         } catch (error) {
             console.log(error)
             res.status(400).json({messange: "Login error!"})
+        }
+    }
+
+    async createWorkspace(req, res) {
+        try {
+            const { id } = req.user
+            const { name_workspace }  = req.body
+            const workspace = new Workspace({
+                name: name_workspace,
+                ownerId: id
+            })
+
+            await workspace.save();
+
+            res.json({messange: "Workspace created! ", workspace})
+        } catch (error) {
+            console.log(error)
+            res.status(400).json({messange: "Cannt create new Workspace!"})
+        }
+    }
+
+    async getWorkspace(req, res) {
+        try {
+            const { id } = req.user
+            const workspaces = await Workspace.findAll({ where: { ownerId: id } });
+            res.json({
+            message: `Workspaces of user ${req.user.name}`,
+            workspaces
+        });
+        } catch (error) {
+            console.log(error)
+            res.status(400).json({messange: "Cannt show Workspace!"})
         }
     }
 
