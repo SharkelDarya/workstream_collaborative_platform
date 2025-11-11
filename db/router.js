@@ -9,6 +9,7 @@ router.post('/login', controller.login);
 router.get('/user', authMiddleware, controller.getUser);
 router.post('/create_workspace', authMiddleware, controller.createWorkspace)
 router.get('/workspaces', authMiddleware, controller.getWorkspace)
+router.get('/show_workspace', authMiddleware, controller.showWorkspace)
 router.post('/add_members', authMiddleware, controller.addMembers)
 
 module.exports = router;

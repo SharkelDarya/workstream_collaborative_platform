@@ -4,6 +4,7 @@ const Workspace = require('./models/Workspace')
 const WorkspaceMember = require('./models/WorkSpaceMember')
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
+const { Op } = require('sequelize');
 
 const generateAccessToken = (id, name, email) => {
     const payload = { id, name, email};
@@ -59,37 +60,27 @@ class Controller {
 
     async addMembers(req, res) {
         try {
-            const { id } = req.user
-            const { id_workspace, ids_members, roles } = req.body
-            
+            // В будущем сделать проверку на админа либо владельца
+            // const { id } = req.user
+            const { id_workspace, name, role } = req.body
+            console.log(id_workspace); 
+            console.log(name); 
+            console.log(role);
             const workspace = await Workspace.findOne({ where: { id: id_workspace }})
             if (!workspace) {
                 return res.status(404).json({ message: "Workspace not found!" });
             }
 
-            const roleMap = {
-                0: 'member',
-                1: 'admin'
-            };
+            const user = await User.findOne({ where: { name: name } });
+            if (!user) return res.status(404).json({ message: "User not found" });
 
-            const addedMembers = [];
-            for(let i = 0; i < ids_members.length; i++){
-                const userId = ids_members[i];
-                const roleNumber = roles[i];
+            await WorkspaceMember.create({
+                workspaceId: id_workspace,
+                userId: user.id,
+                role: role.toLowerCase()
+            })
 
-                let role = 'member'
-                if(roleNumber == 1) role = 'admin';
-
-                const member = await WorkspaceMember.create({
-                    workspaceId: id_workspace,
-                    userId,
-                    role
-                })
-
-                addedMembers.push(member);
-            }
-
-            res.json({ message: "Members added!", members: addedMembers })
+            res.json({ message: "Members added!" })
 
         } catch (error) {
             console.log(error)
@@ -124,13 +115,33 @@ class Controller {
         }
     }
 
+    async showWorkspace(req, res) {
+        // const { id } = req.user
+        const { id } = req.query
+
+        const workspace = await Workspace.findOne({ where: { id: id } });
+        res.json({workspace})
+    }
+
     async getWorkspace(req, res) {
         try {
             const { id } = req.user
-            const workspaces = await Workspace.findAll({ where: { ownerId: id } });
+            const ownedWorkspaces = await Workspace.findAll({ where: { ownerId: id } });
+            const memberships = await WorkspaceMember.findAll({ where: { userId: id } })
+            
+            const memberWorkspaceIds = memberships.map(memberships => memberships.workspaceId);
+
+            const memberWorkspaces = await Workspace.findAll({
+                where: {
+                    id: memberWorkspaceIds,
+                    ownerId: { [Op.ne]: id }   
+                }
+            });
+
             res.json({
             message: `Workspaces of user ${req.user.name}`,
-            workspaces
+            ownedWorkspaces,
+            memberWorkspaces
         });
         } catch (error) {
             console.log(error)
