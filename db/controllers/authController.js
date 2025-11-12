@@ -1,7 +1,7 @@
 const bcrypt = require('bcrypt');
-const User = require('./models/User')
-const Workspace = require('./models/Workspace')
-const WorkspaceMember = require('./models/WorkSpaceMember')
+const User = require('../models/User')
+const Workspace = require('../models/Workspace')
+const WorkspaceMember = require('../models/WorkSpaceMember')
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 const { Op } = require('sequelize');
@@ -11,7 +11,7 @@ const generateAccessToken = (id, name, email) => {
     return jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, {expiresIn: process.env.ACCESS_TOKEN_EXPIRES})
 }
 
-class Controller {
+class authController {
     async registration(req, res) {
         try {
             const { email, username, password } = req.body;
@@ -162,4 +162,4 @@ class Controller {
     }
 }
 
-module.exports = new Controller;
+module.exports = new authController;

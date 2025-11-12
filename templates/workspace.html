@@ -38,21 +38,68 @@
             return;
         }
 
-        const res = await fetch(`/api/show_workspace?id=${workspace_id}`, {
+        const res = await fetch(`/api/workspace?id=${workspace_id}`, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
 
         if (res.ok) {
             const data = await res.json();
             const workspace = data.workspace;
+            const users = data.users;
 
             document.getElementById('name_workspace').textContent = workspace.name;
 
             const membersDiv = document.getElementById('members');
-            membersDiv.textContent = "No members listed yet."; 
+            membersDiv.innerHTML = ''; 
+
+            if (!users || users.length === 0) {
+                membersDiv.textContent = "No members yet.";
+            } else {
+                const ul = document.createElement('ul');
+
+                users.forEach(user => {
+                    const li = document.createElement('li');
+                    li.textContent = `${user.name} (${user.role})   `;
+                    
+                    // if(user && user.role != 'owner'){
+                        const deleteBtn = document.createElement('button');
+                        deleteBtn.textContent = 'Delete';
+                        deleteBtn.className = 'delete-btn';
+                        deleteBtn.onclick = () => deleteMember(user.id);
+                    // }
+                
+                    li.appendChild(deleteBtn);
+                    ul.appendChild(li);
+                });
+
+                membersDiv.appendChild(ul);
+            }
         } else {
             const error = await res.json();
             alert(error.message || "Failed to load workspace");
+        }
+    }
+
+    async function deleteMember(userId) {
+        const token = localStorage.getItem('token');
+        const urlParams = new URLSearchParams(window.location.search);
+        const workspace_id = urlParams.get("workspace_id");
+
+        const res = await fetch(`/api/delete_member?workspace_id=${workspace_id}`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ id_user: userId })
+        });
+
+        if (res.ok) {
+            alert("Member deleted successfully!");
+            window.location.reload();
+        } else {
+            const err = await res.json();
+            alert(err.message || "Error deleting member");
         }
     }
     LoadWorkspaceInfo();
