@@ -24,13 +24,14 @@
   - [x] Авторизация пользователя
   - [x] Добвление новых Workspace
   - [x] Добавление участников в Workspace
+  - [x] Удаление участников
 - [ ] CRUD для workspace и channels.
 - [ ] Минимальный фронтенд: страницы логина/регистрации + dashboard (список workspaces) — Formik + MUI, RTK Query набросать базовые hooks.
 
 ## Функции:
 
-- [ ] Регистрация/вход (email+пароль) + JWT access/refresh.
-- [ ] Workspaces: создать/редактировать/пригласить участников (роль owner/admin/member).
+- [x] Регистрация/вход (email+пароль) + JWT access/refresh.
+- [x] Workspaces: создать, пригласить участников (роль owner/admin/member).
 - [ ] Каналы в workspace: публичные/приватные.
 - [ ] Realtime чат внутри channel (Socket.IO namespaces: `/ws:{workspaceId}/channel:{channelId}`) — сообщения сохраняются в PostgreSQL.
 - [ ] Job queue: пользователь запускает задачу (например, «экспорт CSV» или «фейковая обработка»). BullMQ обрабатывает задачи, статус виден в UI, прогресс пушится через Socket.IO.
@@ -39,7 +40,7 @@
   * хранение сессий/refresh token blacklist/rotation.
 - [ ] OAuth-интеграция (пример: подключение Google Drive или GitHub для демонстрации) — flow для получения токена интеграции и сохранения в PostgreSQL (шифровать).
 - [ ] Email уведомления (Nodemailer + SMTP/SES): письмо при завершении job и приглашения в workspace.
-- [ ] Минимальный frontend: страницы для логина/регистрации, dashboard (список workspaces), workspace view (список каналов, чат), панель запуска jobs + статус. Использовать Next.js App Router, TypeScript, MUI + Formik формы, Redux Toolkit + RTK Query для API, socket.io-client для realtime, i18n (next-i18next или next-intl) — импорт переводов из Google Sheets можно предусмотреть как JSON импортный скрипт (минимально реализовать).
+- [ ] Минимальный frontend: страницы для логина/регистрации, dashboard (список workspaces), workspace view (список каналов, чат), панель запуска jobs + статус. Использовать Next.js App Router, TypeScript, MUI + Formik формы, Redux Toolkit + RTK Query для API, socket.io-client для realtime
 
 ## Миграции
 

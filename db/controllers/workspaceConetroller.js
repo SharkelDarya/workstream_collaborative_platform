@@ -1,6 +1,7 @@
 const User = require('../models/User')
 const Workspace = require('../models/Workspace')
 const WorkspaceMember = require('../models/WorkSpaceMember')
+const Channel = require('../models/Channel')
 require('dotenv').config();
 const { Op } = require('sequelize');
 
@@ -76,7 +77,12 @@ class workspacehController {
                 role: m.role
             }));
 
-            res.json({ workspace, users });
+            const channels = await Channel.findAll({
+                where: { workspaceId: id },
+                attributes: ['id', 'name', 'isPrivate', 'createdAt']
+            });
+
+            res.json({ workspace, users, channels });
         } catch (error) {
             console.error(error);
             res.status(500).json({ message: 'Failed to load workspace info' });

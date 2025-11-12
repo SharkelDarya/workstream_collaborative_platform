@@ -1,10 +1,7 @@
 const bcrypt = require('bcrypt');
 const User = require('../models/User')
-const Workspace = require('../models/Workspace')
-const WorkspaceMember = require('../models/WorkSpaceMember')
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
-const { Op } = require('sequelize');
 
 const generateAccessToken = (id, name, email) => {
     const payload = { id, name, email};
@@ -55,97 +52,6 @@ class authController {
         } catch (error) {
             console.log(error)
             res.status(400).json({messange: "Login error!"})
-        }
-    }
-
-    async addMembers(req, res) {
-        try {
-            // В будущем сделать проверку на админа либо владельца
-            // const { id } = req.user
-            const { id_workspace, name, role } = req.body
-            console.log(id_workspace); 
-            console.log(name); 
-            console.log(role);
-            const workspace = await Workspace.findOne({ where: { id: id_workspace }})
-            if (!workspace) {
-                return res.status(404).json({ message: "Workspace not found!" });
-            }
-
-            const user = await User.findOne({ where: { name: name } });
-            if (!user) return res.status(404).json({ message: "User not found" });
-
-            await WorkspaceMember.create({
-                workspaceId: id_workspace,
-                userId: user.id,
-                role: role.toLowerCase()
-            })
-
-            res.json({ message: "Members added!" })
-
-        } catch (error) {
-            console.log(error)
-            res.status(400).json({messange: "Cannt add members to Workspace!"})
-        }
-    }
-
-    async createWorkspace(req, res) {
-        try {
-            const { id } = req.user
-            const { name_workspace }  = req.body
-            
-            const workspace = await Workspace.create({
-                name: name_workspace,
-                ownerId: id
-            });
-
-            const workspaceMember = await WorkspaceMember.create({
-                workspaceId: workspace.id,
-                userId: id,
-                role: 'owner'
-            });
-
-            res.json({
-                message: "Workspace created!",
-                workspace,
-                workspaceMember
-            });
-        } catch (error) {
-            console.log(error)
-            res.status(400).json({messange: "Cannt create new Workspace!"})
-        }
-    }
-
-    async showWorkspace(req, res) {
-        // const { id } = req.user
-        const { id } = req.query
-
-        const workspace = await Workspace.findOne({ where: { id: id } });
-        res.json({workspace})
-    }
-
-    async getWorkspace(req, res) {
-        try {
-            const { id } = req.user
-            const ownedWorkspaces = await Workspace.findAll({ where: { ownerId: id } });
-            const memberships = await WorkspaceMember.findAll({ where: { userId: id } })
-            
-            const memberWorkspaceIds = memberships.map(memberships => memberships.workspaceId);
-
-            const memberWorkspaces = await Workspace.findAll({
-                where: {
-                    id: memberWorkspaceIds,
-                    ownerId: { [Op.ne]: id }   
-                }
-            });
-
-            res.json({
-            message: `Workspaces of user ${req.user.name}`,
-            ownedWorkspaces,
-            memberWorkspaces
-        });
-        } catch (error) {
-            console.log(error)
-            res.status(400).json({messange: "Cannt show Workspace!"})
         }
     }
 
