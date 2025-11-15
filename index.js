@@ -1,7 +1,9 @@
 const express = require('express');
-const { connectDB } = require('./db/db')
+const { connectDB } = require('./db/db');
 const path = require('path');
-const router = require('./db/router')
+const router = require('./db/router');
+const socketIO = require('socket.io');
+const socketHandler = require('./socket');
 require('dotenv').config();
 
 const PORT = process.env.PORT;
@@ -18,7 +20,11 @@ app.get('/', (req, res) => {
 const start = async () => {
     try {
         await connectDB();
-        app.listen(PORT, () => console.log("Server started at port", PORT));
+        const server = app.listen(PORT, () => console.log("Server started at port", PORT));
+        
+        const io = socketIO(server);
+        socketHandler(io);
+        
     } catch (error) {
         console.log(error)        
     }

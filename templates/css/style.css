@@ -1,7 +1,16 @@
-.form {
+.wrapper {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-around;
+}
+
+.container {
     display: flex;
     flex-direction: column;
     align-items: center;
+    background-color:gainsboro;
+    min-height: 500px;
+    min-width: 300px;
     gap: 20px;
 }
 
@@ -13,4 +22,18 @@ form {
 }
 form a {
     text-decoration: none;
+}
+
+.chat {
+    display: flex;
+    flex-direction: column;
+}
+
+.all_mess {
+    flex: 1; 
+    overflow-y: auto; /* прокрутка сообщений */
+}
+
+.form_mess {
+    align-items: flex-end;
 }

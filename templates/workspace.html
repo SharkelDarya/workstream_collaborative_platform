@@ -7,39 +7,58 @@
     <title> - Workspace - </title>
 </head>
 <body>
-    <div class="form">
-        <h3>Welcome to <span id="name_workspace"></span> Workspace!</h3>
-        <h4>Members: </h4>
-        <div class="addMember">
-            <form onsubmit="AddNewMember(event)">
-                <label>Name:</label>
-                <input type="text" name="name_member">
-                <label>Role:</label>
-                <select name="role" id="role">
-                    <option value="Member">Member</option>
-                    <option value="Admin">Admin</option>
-                </select>
-                <input type="submit" value="Add member">  
-            </form>  
-        </div>
-        <div id="members"></div>
+    <div class="wrapper">
+        <div class="container">
+            <h3>Welcome to <span id="name_workspace"></span> Workspace!</h3>
+            <h4>Members: </h4>
+            <div class="addMember">
+                <form onsubmit="AddNewMember(event)">
+                    <label>Name:</label>
+                    <input type="text" name="name_member">
+                    <label>Role:</label>
+                    <select name="role" id="role">
+                        <option value="Member">Member</option>
+                        <option value="Admin">Admin</option>
+                    </select>
+                    <input type="submit" value="Add member">  
+                </form>  
+            </div>
 
-        <h4>Channels: </h4>
-        <div class="addChannel">
-            <form id="form_add_channel" onsubmit="AddNewChannel(event)">
-                <label>Name:</label>
-                <input type="text" name="name_channel">
-                <label>Public/Private:</label>
-                <select name="type_channel" id="type_channel">
-                    <option value="Public">Public</option>
-                    <option value="Private">Private</option>
-                </select>
-                <input type="submit" value="Add channel">  
-            </form>  
+            <div id="members"></div>
+
+            <h4>Channels: </h4>
+            <div class="addChannel">
+                <form id="form_add_channel" onsubmit="AddNewChannel(event)">
+                    <label>Name:</label>
+                    <input type="text" name="name_channel">
+                    <label>Public/Private:</label>
+                    <select name="type_channel" id="type_channel">
+                        <option value="Public">Public</option>
+                        <option value="Private">Private</option>
+                    </select>
+                    <input type="submit" value="Add channel">  
+                </form>  
+            </div>
+
+            <div id="channels"></div> 
         </div>
-        <div id="channels"></div> 
+        <div class="container">
+            <div class="chat">
+                <h3><span id="name_channel">Choose channel</span> | chat:</h3>
+                <div class="all_mess">Nothing.</div>
+                <div class="form_mess">
+                    <form id="send_mess">
+                        <input type="text" name="text_mess" placeholder="Enter the message">
+                        <input type="submit" name="send_mess_submit" value="Send">
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <h3>Jobs</h3>
+        </div>
     </div>
-</body>
+<!-- Load Workspace -->
 <script>
     async function LoadWorkspaceInfo() {
         const token = localStorage.getItem('token');
@@ -175,6 +194,62 @@
     }
     LoadWorkspaceInfo();
 </script>
+
+<!-- Load Chat -->
+<script src="/socket.io/socket.io.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", async () => {
+    const socket = io();
+    const token = localStorage.getItem('token');
+    const channel_id = new URLSearchParams(window.location.search).get('channel_id');
+
+    if (!channel_id) return;
+
+    const resChannel = await fetch(`/api/channel?id=${channel_id}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+    });
+    if (resChannel.ok) {
+        const channelData = await resChannel.json();
+        document.getElementById('name_channel').textContent = channelData.channel.name;
+    }
+
+    const resUser = await fetch('/api/user', { headers: { 'Authorization': `Bearer ${token}` } });
+    const user = await resUser.json();
+
+    socket.emit('join channel', { channel_id });
+
+    const chatBox = document.querySelector('.all_mess');
+    socket.on('channel history', (messages) => {
+        chatBox.innerHTML = '';
+        messages.forEach(msg => {
+            const div = document.createElement('div');
+            div.textContent = `${msg.user.name}: ${msg.text}`;
+            chatBox.appendChild(div);
+        });
+        chatBox.scrollTop = chatBox.scrollHeight;
+    });
+
+    document.getElementById('send_mess').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const input = e.target.elements.text_mess;
+        const text = input.value.trim();
+        if (!text) return;
+
+        socket.emit('send message', { channel_id, user_id: user.id, text });
+        input.value = '';
+    });
+
+    socket.on('new message', (msg) => {
+        if (msg.channelId != channel_id) return;
+        const div = document.createElement('div');
+        div.textContent = `${msg.userName}: ${msg.text}`;
+        chatBox.appendChild(div);
+        chatBox.scrollTop = chatBox.scrollHeight;
+    });
+});
+</script>
+
+<!-- Add New Members | Add New Channels -->
 <script>
     async function AddNewMember(event) {
         event.preventDefault();
@@ -229,4 +304,6 @@
         }
     }
 </script>
+
+</body>
 </html>

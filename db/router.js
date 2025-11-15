@@ -21,5 +21,6 @@ router.post('/delete_member', authMiddleware, workspaceController.deleteMember)
 //Channel
 router.post('/add_channel', authMiddleware, channelController.add)
 router.post('/delete_channel', authMiddleware, channelController.delete)
+router.get('/channel', authMiddleware, channelController.get_channel_data)
 
 module.exports = router;

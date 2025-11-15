@@ -7,7 +7,7 @@
     <title>User Dashboard</title>
 </head>
 <body>
-    <div class="form">
+    <div class="container">
         <h3>Welcome, <span id="username"></span>!</h3>
         <span>Your id: <span id="id"></span></span>
         <span>Your email: <span id="email"></span></span>
@@ -20,6 +20,7 @@
         <div id="memberWorkspaces"></div>
     </div>
 
+    <!-- Load User Info -->
    <script>
         async function loadUserInfo() {
             const token = localStorage.getItem('token');
@@ -41,6 +42,8 @@
         }
         loadUserInfo();
     </script>
+
+    <!-- Load WorkSpace Info -->
     <script>
         async function loadWorkspaces() {
             const token = localStorage.getItem('token');
@@ -117,6 +120,6 @@
         }
 
         loadWorkspaces();
-        </script>
+    </script>
 </body>
 </html>
