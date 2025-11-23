@@ -33,7 +33,7 @@
 - [x] Регистрация/вход (email+пароль) + JWT access/refresh.
 - [x] Workspaces: создать, пригласить участников (роль owner/admin/member).
 - [ ] Каналы в workspace: публичные/приватные.
-- [ ] Realtime чат внутри channel (Socket.IO namespaces: `/ws:{workspaceId}/channel:{channelId}`) — сообщения сохраняются в PostgreSQL.
+- [x] Realtime чат внутри channel (Socket.IO namespaces: `/ws:{workspaceId}/channel:{channelId}`) — сообщения сохраняются в PostgreSQL.
 - [ ] Job queue: пользователь запускает задачу (например, «экспорт CSV» или «фейковая обработка»). BullMQ обрабатывает задачи, статус виден в UI, прогресс пушится через Socket.IO.
 - [ ] Redis:
   * кеш списка каналов / метаданных workspace для быстрой загрузки.

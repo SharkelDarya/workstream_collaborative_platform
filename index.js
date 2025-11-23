@@ -3,7 +3,7 @@ const { connectDB } = require('./db/db');
 const path = require('path');
 const router = require('./db/router');
 const socketIO = require('socket.io');
-const socketHandler = require('./socket');
+const socketHandler = require('./chat');
 require('dotenv').config();
 
 const PORT = process.env.PORT;
