@@ -57,15 +57,18 @@
         <div class="container">
             <h3>Jobs</h3>
             <div class="addJob">
-                <form id="form_add_job" onsubmit="AddNewJob(event)">
+                <form id="form_add_job">
                     <label>Type:</label>
-                    <input type="text" name="type_job">
+                    <select name="type_job" required>
+                        <option value="CSV Export">CSV Export</option>
+                        <option value="Data Processing">Data Processing</option>
+                        <option value="Report Generation">Report Generation</option>
+                        <option value="Fake Processing">Fake Processing</option>
+                    </select>
                     <input type="submit" value="Add job">  
                 </form>  
             </div>
-            
             <div id="jobs"></div> 
-        </div>
     </div>
 <!-- Load Workspace -->
 <script>
@@ -152,29 +155,29 @@
                 channelsDiv.appendChild(ul);
             }
 
-            const jobsDiv = document.getElementById('jobs');
-            jobsDiv.innerHTML = ''; 
+            // const jobsDiv = document.getElementById('jobs');
+            // jobsDiv.innerHTML = ''; 
 
-            if (!jobs || jobs.length === 0) {
-                jobsDiv.textContent = "No jobs yet.";
-            } else {
-                const ul = document.createElement('ul');
+            // if (!jobs || jobs.length === 0) {
+            //     jobsDiv.textContent = "No jobs yet.";
+            // } else {
+            //     const ul = document.createElement('ul');
 
-                jobs.forEach(job => {
-                    const li = document.createElement('li');
-                    li.textContent = `${job.type} \t [${job.status}] \t [${job.progress}] \t`;
+            //     jobs.forEach(job => {
+            //         const li = document.createElement('li');
+            //         li.textContent = `${job.type} \t [${job.status}] \t [${job.progress}] \t`;
                     
-                    const deleteBtn = document.createElement('button');
-                    deleteBtn.textContent = 'Delete';
-                    deleteBtn.className = 'delete-job-btn';
-                    deleteBtn.onclick = () => deleteJob(job.id);
+            //         const deleteBtn = document.createElement('button');
+            //         deleteBtn.textContent = 'Delete';
+            //         deleteBtn.className = 'delete-job-btn';
+            //         deleteBtn.onclick = () => deleteJob(job.id);
                 
-                    li.appendChild(deleteBtn);
-                    ul.appendChild(li);
-                });
+            //         li.appendChild(deleteBtn);
+            //         ul.appendChild(li);
+            //     });
 
-                jobsDiv.appendChild(ul);
-            }
+            //     jobsDiv.appendChild(ul);
+            // }
         } else {
             const error = await res.json();
             alert(error.message || "Failed to load workspace");
@@ -227,28 +230,27 @@
         }
     }
 
-        async function deleteJob(jobId) {
-        const token = localStorage.getItem('token');
-        const urlParams = new URLSearchParams(window.location.search);
-        const workspace_id = urlParams.get("workspace_id");
+        // async function deleteJob(jobId) {
+        // const token = localStorage.getItem('token');
+        // const urlParams = new URLSearchParams(window.location.search);
+        // const workspace_id = urlParams.get("workspace_id");
 
-        const res = await fetch(`/api/delete_job?workspace_id=${workspace_id}`, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ id_job: jobId })
-        });
+        // const res = await fetch(`/api/delete_job?workspace_id=${workspace_id}`, {
+        //     method: 'POST',
+        //     headers: {
+        //         'Authorization': `Bearer ${token}`,
+        //         'Content-Type': 'application/json'
+        //     },
+        //     body: JSON.stringify({ id_job: jobId })
+        // });
 
-        if (res.ok) {
-            alert("Job deleted successfully!");
-            window.location.reload();
-        } else {
-            const err = await res.json();
-            alert(err.message || "Error deleting job");
-        }
-    }
+        // if (res.ok) {
+        //     alert("Job deleted successfully!");
+        //     window.location.reload();
+        // } else {
+        //     const err = await res.json();
+        //     alert(err.message || "Error deleting job");
+        // }
     LoadWorkspaceInfo();
 </script>
 
@@ -303,6 +305,19 @@ document.addEventListener("DOMContentLoaded", async () => {
         chatBox.appendChild(div);
         chatBox.scrollTop = chatBox.scrollHeight;
     });
+});
+</script>
+
+<!-- Load Jobs  -->
+<script src="/JobUIController.js"></script>
+<script>
+const jobController = new JobUIController();
+
+document.getElementById('form_add_job')?.addEventListener('submit', function(e) {
+  e.preventDefault();
+  const type = this.querySelector('select[name="type_job"]').value;
+  jobController.createJob(type);
+  this.reset();
 });
 </script>
 

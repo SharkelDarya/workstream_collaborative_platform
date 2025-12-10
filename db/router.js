@@ -12,7 +12,7 @@ router.post('/login', authController.login);
 router.get('/user', authMiddleware, authController.getUser);
 
 //Workspace
-router.post('/create_workspace', authMiddleware, workspaceController.createJob)
+router.post('/create_workspace', authMiddleware, workspaceController.createWorkspace)
 router.get('/workspaces', authMiddleware, workspaceController.getAllWorkspaces)
 router.get('/workspace', authMiddleware, workspaceController.getWorkspace)
 router.post('/add_members', authMiddleware, workspaceController.addMembers)

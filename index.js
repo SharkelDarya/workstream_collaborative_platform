@@ -4,13 +4,16 @@ const path = require('path');
 const router = require('./db/router');
 const socketIO = require('socket.io');
 const socketHandler = require('./chat');
+const JobSocketHandler = require('./queues/JobSocketHandler');
 require('dotenv').config();
 
 const PORT = process.env.PORT;
 const app = express()
-app.use(express.urlencoded({ extended: true })); // для обработки обычных HTML-форм
+
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json())
 app.use(express.static(path.join(__dirname, 'templates')))
+app.use(express.static(path.join(__dirname, 'queues')));
 app.use('/api', router);
 
 app.get('/', (req, res) => {
@@ -24,7 +27,13 @@ const start = async () => {
         
         const io = socketIO(server);
         socketHandler(io);
-        
+        JobSocketHandler(io);
+        console.log({
+            host: process.env.DB_HOST,
+            user: process.env.DB_USERNAME,
+            db: process.env.DB_NAME,
+            port: process.env.DB_PORT
+            });
     } catch (error) {
         console.log(error)        
     }
